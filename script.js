@@ -1,75 +1,70 @@
-document.addEventListener("DOMContentLoaded", () => {
+import { db } from "./firebase-init.js";
+import { collection, addDoc, getDocs, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-  const prices = {
-    Erkak: {
-      "Kunlik":20000,"Kun ora (oylik)":250000,"Oylik":300000,
-      "3 oylik":700000,"6 oylik":1300000,"1 yillik":2400000
-    },
-    Ayol: {
-      "Kunlik":20000,"Kun ora (oylik)":200000,"Oylik":250000,
-      "3 oylik":500000,"6 oylik":1000000,"1 yillik":1800000
-    }
-  };
+const form = document.getElementById("clientForm");
+const addBtn = document.getElementById("addBtn");
+const tableBody = document.getElementById("clientsTableBody");
 
-  const addBtn = document.getElementById("addBtn");
-  const tableBody = document.getElementById("tableBody");
+// Firestore collection
+const clientsCol = collection(db, "clients");
 
-  let clients = JSON.parse(localStorage.getItem("clients")) || [];
-
-  function render() {
-    tableBody.innerHTML = "";
-    clients.forEach((c,i)=>{
-      tableBody.innerHTML += `
-        <tr>
-          <td>${i+1}</td>
-          <td>${c.name}</td>
-          <td>${c.phone}</td>
-          <td>${c.membership}</td>
-          <td>${c.price.toLocaleString()} so‘m</td>
-          <td><button onclick="del(${i})">O‘chirish</button></td>
-        </tr>`;
-    });
-  }
-
-  addBtn.addEventListener("click", () => {
-    const name = document.getElementById("name");
-    const phone = document.getElementById("phone");
-    const gender = document.getElementById("gender");
-    const membership = document.getElementById("membership");
-
-    if(!name.value || !phone.value || !gender.value || !membership.value){
-      alert("Barcha maydonlarni to‘ldiring");
-      return;
-    }
-
-    const price = prices[gender.value][membership.value];
-
-    clients.push({
-      name: name.value,
-      phone: phone.value,
-      membership: membership.value,
-      price
-    });
-
-    localStorage.setItem("clients", JSON.stringify(clients));
-    render();
-
-    /* 🔥 FORM CLEAR */
-    name.value = "";
-    phone.value = "";
-    gender.value = "";
-    membership.value = "";
+// Real-time snapshot jadvalni yangilash
+onSnapshot(query(clientsCol, orderBy("createdAt", "desc")), (snapshot) => {
+  tableBody.innerHTML = "";
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${data.name}</td>
+      <td>${data.gender}</td>
+      <td>${data.subscription}</td>
+      <td>${data.price}</td>
+      <td>${new Date(data.startDate).toLocaleDateString()}</td>
+      <td>${new Date(data.nextPayment).toLocaleDateString()}</td>
+      <td>
+        <button class="deleteBtn" data-id="${docSnap.id}">O'chirish</button>
+      </td>
+    `;
+    tableBody.appendChild(row);
   });
 
-  window.del = (i) => {
-    clients.splice(i,1);
-    localStorage.setItem("clients", JSON.stringify(clients));
-    render();
-  };
+  // Delete tugmasi
+  document.querySelectorAll(".deleteBtn").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const id = btn.getAttribute("data-id");
+      await deleteDoc(doc(db, "clients", id));
+    });
+  });
+});
 
-  document.getElementById("logoutBtn").onclick = () => {
-    window.location.href = "index.html";
-  };
+// Qo‘shish tugmasi
+addBtn.addEventListener("click", async (e) => {
+  e.preventDefault();
+  
+  const name = form.name.value.trim();
+  const gender = form.gender.value;
+  const subscription = form.subscription.value;
+  const price = form.price.value;
+  const startDate = form.startDate.value;
+  const nextPayment = form.nextPayment.value;
 
-  render();
+  // ✅ Form validation
+  if (!name || !gender || !subscription || !price || !startDate || !nextPayment) {
+    alert("Barcha maydonlarni to'ldiring!");
+    return; // Shu yerda to‘xtaydi
+  }
+
+  // Qo‘shish
+  await addDoc(clientsCol, {
+    name,
+    gender,
+    subscription,
+    price,
+    startDate,
+    nextPayment,
+    createdAt: new Date()
+  });
+
+  // Form clear
+  form.reset();
 });
