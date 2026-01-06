@@ -68,3 +68,20 @@ addBtn.addEventListener("click", async (e) => {
   // Form clear
   form.reset();
 });
+
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+const auth = getAuth(); // Firebase auth
+
+const logoutBtn = document.getElementById("logoutBtn");
+
+logoutBtn.addEventListener("click", async () => {
+  try {
+    await signOut(auth);
+    alert("Siz muvaffaqiyatli chiqdingiz!");
+    window.location.href = "index.html"; // Login sahifaga yo‘naltirish
+  } catch (error) {
+    console.error("Logout xato:", error);
+    alert("Logout amalga oshmadi!");
+  }
+});
