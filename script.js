@@ -1,35 +1,61 @@
 import { db } from "./firebase-init.js";
-import { collection, addDoc, getDocs, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+import {
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  query,
+  orderBy,
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
 const form = document.getElementById("clientForm");
 const addBtn = document.getElementById("addBtn");
 const tableBody = document.getElementById("clientsTableBody");
+const logoutBtn = document.getElementById("logoutBtn");
 
-// Firestore collection
 const clientsCol = collection(db, "clients");
 
-// Real-time snapshot jadvalni yangilash
+const prices = {
+  Erkak: {
+    Kunlik: 20000,
+    "Kun ora": 250000,
+    Oylik: 300000,
+    "3 oylik": 700000,
+    "6 oylik": 1300000,
+    "1 yillik": 2400000,
+  },
+  Ayol: {
+    Kunlik: 20000,
+    "Kun ora": 200000,
+    Oylik: 250000,
+    "3 oylik": 500000,
+    "6 oylik": 1000000,
+    "1 yillik": 1800000,
+  },
+};
+
+// Real-time jadval
 onSnapshot(query(clientsCol, orderBy("createdAt", "desc")), (snapshot) => {
   tableBody.innerHTML = "";
-  snapshot.forEach(docSnap => {
+  snapshot.forEach((docSnap) => {
     const data = docSnap.data();
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${data.name}</td>
-      <td>${data.gender}</td>
+      <td>${data.phone}</td>
       <td>${data.subscription}</td>
-      <td>${data.price}</td>
+      <td>${data.price.toLocaleString()} so'm</td>
       <td>${new Date(data.startDate).toLocaleDateString()}</td>
       <td>${new Date(data.nextPayment).toLocaleDateString()}</td>
-      <td>
-        <button class="deleteBtn" data-id="${docSnap.id}">O'chirish</button>
-      </td>
+      <td><button class="deleteBtn" data-id="${
+        docSnap.id
+      }">O'chirish</button></td>
     `;
     tableBody.appendChild(row);
   });
 
-  // Delete tugmasi
-  document.querySelectorAll(".deleteBtn").forEach(btn => {
+  document.querySelectorAll(".deleteBtn").forEach((btn) => {
     btn.addEventListener("click", async () => {
       const id = btn.getAttribute("data-id");
       await deleteDoc(doc(db, "clients", id));
@@ -37,51 +63,61 @@ onSnapshot(query(clientsCol, orderBy("createdAt", "desc")), (snapshot) => {
   });
 });
 
-// Qo‘shish tugmasi
+// Qo‘shish
 addBtn.addEventListener("click", async (e) => {
   e.preventDefault();
-  
   const name = form.name.value.trim();
+  const phone = form.phone.value.trim();
   const gender = form.gender.value;
   const subscription = form.subscription.value;
-  const price = form.price.value;
-  const startDate = form.startDate.value;
-  const nextPayment = form.nextPayment.value;
 
-  // ✅ Form validation
-  if (!name || !gender || !subscription || !price || !startDate || !nextPayment) {
+  if (!name || !phone || !gender || !subscription) {
     alert("Barcha maydonlarni to'ldiring!");
-    return; // Shu yerda to‘xtaydi
+    return;
   }
 
-  // Qo‘shish
-  await addDoc(clientsCol, {
-    name,
-    gender,
-    subscription,
-    price,
-    startDate,
-    nextPayment,
-    createdAt: new Date()
-  });
+  const price = prices[gender][subscription];
+  const today = new Date();
+  let nextPayment = new Date(today);
 
-  // Form clear
-  form.reset();
+  switch (subscription) {
+    case "Kunlik":
+      nextPayment.setDate(nextPayment.getDate() + 1);
+      break;
+    case "Kun ora":
+    case "Oylik":
+      nextPayment.setMonth(nextPayment.getMonth() + 1);
+      break;
+    case "3 oylik":
+      nextPayment.setMonth(nextPayment.getMonth() + 3);
+      break;
+    case "6 oylik":
+      nextPayment.setMonth(nextPayment.getMonth() + 6);
+      break;
+    case "1 yillik":
+      nextPayment.setFullYear(nextPayment.getFullYear() + 1);
+      break;
+  }
+
+  try {
+    await addDoc(clientsCol, {
+      name,
+      phone,
+      gender, // saqlaymiz, ammo jadvalda ko‘rsatilmaydi
+      subscription,
+      price,
+      startDate: today.toISOString(),
+      nextPayment: nextPayment.toISOString(),
+      createdAt: new Date(),
+    });
+    form.reset();
+  } catch (err) {
+    console.error(err);
+    alert("Xatolik yuz berdi!");
+  }
 });
 
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-
-const auth = getAuth(); // Firebase auth
-
-const logoutBtn = document.getElementById("logoutBtn");
-
-logoutBtn.addEventListener("click", async () => {
-  try {
-    await signOut(auth);
-    alert("Siz muvaffaqiyatli chiqdingiz!");
-    window.location.href = "index.html"; // Login sahifaga yo‘naltirish
-  } catch (error) {
-    console.error("Logout xato:", error);
-    alert("Logout amalga oshmadi!");
-  }
+// Logout
+logoutBtn.addEventListener("click", () => {
+  window.location.href = "index.html";
 });

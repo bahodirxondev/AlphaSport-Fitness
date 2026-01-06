@@ -1,61 +1,74 @@
 <!DOCTYPE html>
 <html lang="uz">
-<head>
-  <meta charset="UTF-8">
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="shortcut icon" href="./logo.jpg" type="image/x-icon">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AlphaSport Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="shortcut icon" href="./logo.jpg" type="image/x-icon" />
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <img src="./logo.jpg" alt="AlphaSport Fitness Logo" />
+        <h1>AlphaSport Fitness</h1>
+      </div>
+      <button id="logoutBtn" class="btn logout-btn">Chiqish</button>
+    </header>
 
-<header>
-  <h1>Fitness Admin Panel</h1>
-  <button id="logoutBtn" type="button">Chiqish</button>
-</header>
+    <main>
+      <section class="form-section">
+        <h2>Yangi Mijoz Qo‘shish</h2>
+        <form id="clientForm">
+          <input type="text" name="name" placeholder="Ism" required />
+          <input
+            type="text"
+            name="phone"
+            placeholder="Telefon raqam"
+            required
+          />
+          <select name="gender" required>
+            <option value="">Jinsini tanlang</option>
+            <option value="Erkak">Erkak</option>
+            <option value="Ayol">Ayol</option>
+          </select>
+          <select name="subscription" required id="subscription">
+            <option value="">Aboniment turi</option>
+            <option value="Kunlik">Kunlik</option>
+            <option value="Kun ora">Kun ora</option>
+            <option value="Oylik">Oylik</option>
+            <option value="3 oylik">3 oylik</option>
+            <option value="6 oylik">6 oylik</option>
+            <option value="1 yillik">1 yillik</option>
+          </select>
+          <button type="submit" id="addBtn" class="btn add-btn">
+            Qo‘shish
+          </button>
+        </form>
+      </section>
 
-<div class="container">
+      <section class="table-section">
+        <h2>Mijozlar ro‘yxati</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Ism</th>
+                <th>Telefon raqam</th>
+                <th>Aboniment</th>
+                <th>Narxi</th>
+                <th>Boshlanish sanasi</th>
+                <th>Keyingi to‘lov</th>
+                <th>Amal</th>
+              </tr>
+            </thead>
+            <tbody id="clientsTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
 
-  <div class="form-box">
-    <input id="name" type="text" placeholder="Ism">
-    <input id="phone" type="tel" placeholder="Telefon">
-
-    <select id="gender">
-      <option value="">Jins</option>
-      <option value="Erkak">Erkak</option>
-      <option value="Ayol">Ayol</option>
-    </select>
-
-    <select id="membership">
-      <option value="">Abonement</option>
-      <option value="Kunlik">Kunlik</option>
-      <option value="Kun ora (oylik)">Kun ora (oylik)</option>
-      <option value="Oylik">Oylik</option>
-      <option value="3 oylik">3 oylik</option>
-      <option value="6 oylik">6 oylik</option>
-      <option value="1 yillik">1 yillik</option>
-    </select>
-
-    <button id="addBtn" type="button">Qo‘shish</button>
-  </div>
-
-  <table>
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Ism</th>
-        <th>Telefon</th>
-        <th>Abonement</th>
-        <th>To‘lov</th>
-        <th>Amal</th>
-      </tr>
-    </thead>
-    <tbody id="tableBody"></tbody>
-  </table>
-
-</div>
-
-<script src="script.js"></script>
-<script type="module" src="firebase-init.js"></script>
-<script type="module" src="script.js"></script>
-</body>
+    <script type="module" src="firebase-init.js"></script>
+    <script type="module" src="script.js"></script>
+  </body>
 </html>
