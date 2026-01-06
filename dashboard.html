@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="shortcut icon" href="./logo.jpg" type="image/x-icon">
+</head>
+<body>
+
+<header>
+  <h1>Fitness Admin Panel</h1>
+  <button id="logoutBtn" type="button">Chiqish</button>
+</header>
+
+<div class="container">
+
+  <div class="form-box">
+    <input id="name" type="text" placeholder="Ism">
+    <input id="phone" type="tel" placeholder="Telefon">
+
+    <select id="gender">
+      <option value="">Jins</option>
+      <option value="Erkak">Erkak</option>
+      <option value="Ayol">Ayol</option>
+    </select>
+
+    <select id="membership">
+      <option value="">Abonement</option>
+      <option value="Kunlik">Kunlik</option>
+      <option value="Kun ora (oylik)">Kun ora (oylik)</option>
+      <option value="Oylik">Oylik</option>
+      <option value="3 oylik">3 oylik</option>
+      <option value="6 oylik">6 oylik</option>
+      <option value="1 yillik">1 yillik</option>
+    </select>
+
+    <button id="addBtn" type="button">Qo‘shish</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Ism</th>
+        <th>Telefon</th>
+        <th>Abonement</th>
+        <th>To‘lov</th>
+        <th>Amal</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

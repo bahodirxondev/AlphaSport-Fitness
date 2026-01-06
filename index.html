@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>AlphaSport Login</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="shortcut icon" href="./logo.jpg" type="image/x-icon">
+</head>
+<body class="login-body">
+
+<div class="login-box">
+  <img src="./logo.jpg" alt="logo">
+  <h2>AlphaSport Fitness</h2>
+  <input type="text" id="username" placeholder="Login">
+  <input type="password" id="password" placeholder="Parol">
+  <button id="loginBtn">Kirish</button>
+  <p id="loginMsg"></p>
+</div>
+
+<script>
+document.getElementById("loginBtn").addEventListener("click", () => {
+  const u = document.getElementById("username").value;
+  const p = document.getElementById("password").value;
+
+  if (u === "raxmatillo" && p === "raxmatillo77") {
+    localStorage.setItem("loggedIn", "true");
+    window.location.href = "dashboard.html";
+  } else {
+    document.getElementById("loginMsg").innerText = "Login yoki parol xato";
+  }
+});
+</script>
+
+</body>
+</html>
